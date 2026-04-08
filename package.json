@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +14,7 @@
     "@discordjs/rest": "^2.6.1",
     "axios": "^1.15.0",
     "axios-cookiejar-support": "^6.0.5",
-    "discord-api-types": "^0.38.44",
+    "discord-api-types": "^0.38.4",
     "discord.js": "^14.26.2",
     "https-proxy-agent": "^9.0.0",
     "rss-parser": "^3.13.0",
