@@ -72,18 +72,50 @@ if (interaction.commandName === 'settiktok') {
 
 // 🔁 TikTok checker
 
-const res = await axios.get(`https://www.tiktok.com/@${config.tiktokUser}`, {
-  headers: {
-    "User-Agent": "Mozilla/5.0"
-  }
-});
-
 setInterval(async () => {
   try {
-    const res = await axios.get(`https://www.tiktok.com/@${config.tiktokUser}`);
-    // rest van je code
+    console.log("🔄 TikTok check gestart...");
+
+    if (!config.tiktokUser || !config.channelId) {
+      console.log("❌ Geen user of channel ingesteld");
+      return;
+    }
+
+    const res = await axios.get(`https://www.tiktok.com/@${config.tiktokUser}`, {
+      headers: {
+        "User-Agent": "Mozilla/5.0"
+      }
+    });
+
+    const html = res.data;
+
+    const matches = html.match(/\/video\/\d+/g);
+
+    if (!matches) {
+      console.log("❌ Geen video's gevonden");
+      return;
+    }
+
+    const videoLink = `https://www.tiktok.com${matches[0]}`;
+
+    console.log("🎥 Laatste video:", videoLink);
+
+    if (videoLink !== config.lastVideo) {
+      console.log("🚀 NIEUWE TIKTOK!");
+
+      config.lastVideo = videoLink;
+      saveConfig();
+
+      const channel = await client.channels.fetch(config.channelId);
+      if (!channel) return;
+
+      await channel.send(`📢 Nieuwe TikTok!\n${videoLink}`);
+    } else {
+      console.log("⏸️ Geen nieuwe video");
+    }
+
   } catch (err) {
-    console.log(err);
+    console.log("❌ TikTok error:", err.message);
   }
 }, 60000);
 
