@@ -77,7 +77,7 @@ setInterval(async () => {
     console.log("🔄 TikTok check gestart...");
 
     if (!config.tiktokUser || !config.channelId) {
-      console.log("❌ Geen user of channel ingesteld");
+      console.log("❌ Geen user of channel");
       return;
     }
 
@@ -89,22 +89,39 @@ setInterval(async () => {
 
     const html = res.data;
 
-const videoMatches = [...html.matchAll(/"video":{"id":"(\d+)"/g)];
+    // 🔥 haal SIGI_STATE JSON eruit
+    const jsonMatch = html.match(/<script id="SIGI_STATE"[^>]*>(.*?)<\/script>/);
 
-if (!videoMatches || videoMatches.length === 0) {
-  console.log("❌ Geen video's gevonden");
-  return;
-}
+    if (!jsonMatch) {
+      console.log("❌ SIGI JSON niet gevonden");
+      return;
+    }
 
-// alle IDs verzamelen
-const ids = videoMatches.map(m => m[1]);
+    const json = JSON.parse(jsonMatch[1]);
 
-// grootste ID = nieuwste video
-const newestId = ids.sort((a, b) => BigInt(b) - BigInt(a))[0];
+    const items = json.ItemModule;
 
-const videoLink = `https://www.tiktok.com/@${config.tiktokUser}/video/${newestId}`;
+    if (!items) {
+      console.log("❌ Geen items gevonden");
+      return;
+    }
 
-    console.log("🎥 Laatste video:", videoLink);
+    // 🔥 pak alle videos
+    const videos = Object.values(items);
+
+    if (videos.length === 0) {
+      console.log("❌ Geen video's");
+      return;
+    }
+
+    // 🔥 sorteer op createTime (nieuwste eerst)
+    videos.sort((a, b) => b.createTime - a.createTime);
+
+    const newest = videos[0];
+
+    const videoLink = `https://www.tiktok.com/@${config.tiktokUser}/video/${newest.id}`;
+
+    console.log("🎥 Nieuwste video:", videoLink);
 
     if (videoLink !== config.lastVideo) {
       console.log("🚀 NIEUWE TIKTOK!");
@@ -124,5 +141,4 @@ const videoLink = `https://www.tiktok.com/@${config.tiktokUser}/video/${newestId
     console.log("❌ TikTok error:", err.message);
   }
 }, 60000);
-
 client.login(process.env.TOKEN);
