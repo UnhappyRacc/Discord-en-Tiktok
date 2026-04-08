@@ -88,6 +88,7 @@ setInterval(async () => {
     });
 
     const html = res.data;
+
 const videoMatches = [...html.matchAll(/"video":{"id":"(\d+)"/g)];
 
 if (!videoMatches || videoMatches.length === 0) {
@@ -95,8 +96,13 @@ if (!videoMatches || videoMatches.length === 0) {
   return;
 }
 
-const videoId = videoMatches[0][1];
-const videoLink = `https://www.tiktok.com/@${config.tiktokUser}/video/${videoId}`;
+// alle IDs verzamelen
+const ids = videoMatches.map(m => m[1]);
+
+// grootste ID = nieuwste video
+const newestId = ids.sort((a, b) => BigInt(b) - BigInt(a))[0];
+
+const videoLink = `https://www.tiktok.com/@${config.tiktokUser}/video/${newestId}`;
 
     console.log("🎥 Laatste video:", videoLink);
 
