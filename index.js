@@ -80,40 +80,10 @@ const res = await axios.get(`https://www.tiktok.com/@${config.tiktokUser}`, {
 
 setInterval(async () => {
   try {
-    console.log("🔄 TikTok check gestart...");
-
-    if (!config.tiktokUser || !config.channelId) return;
-
-    const res = await axios.get(`https://www.tiktok.com/@${config.tiktokUser}`, {
-      httpsAgent: agent,
-      headers: {
-        "User-Agent": "Mozilla/5.0"
-      }
-    });
-
-    const html = res.data;
-
-    const matches = html.match(/\/video\/\d+/g);
-
-    if (!matches) {
-      console.log("❌ Geen video's gevonden");
-      return;
-    }
-
-    const videoLink = `https://www.tiktok.com${matches[0]}`;
-
-    console.log("🎥", videoLink);
-
-    if (videoLink !== config.lastVideo) {
-      config.lastVideo = videoLink;
-      saveConfig();
-
-      const channel = await client.channels.fetch(config.channelId);
-      await channel.send(`📢 Nieuwe TikTok!\n${videoLink}`);
-    }
-
+    const res = await axios.get(`https://www.tiktok.com/@${config.tiktokUser}`);
+    // rest van je code
   } catch (err) {
-    console.log("❌ Proxy error:", err.message);
+    console.log(err);
   }
 }, 60000);
 
