@@ -72,8 +72,6 @@ if (interaction.commandName === 'settiktok') {
 
 // 🔁 TikTok checker
 
-const axios = require('axios');
-
 const res = await axios.get(`https://www.tiktok.com/@${config.tiktokUser}`, {
   headers: {
     "User-Agent": "Mozilla/5.0"
