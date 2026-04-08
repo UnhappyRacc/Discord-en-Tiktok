@@ -89,14 +89,16 @@ setInterval(async () => {
 
     const html = res.data;
 
-    const matches = html.match(/\/video\/\d+/g);
+const matches = [...html.matchAll(/"id":"(\d{18,})"/g)];
 
-    if (!matches) {
-      console.log("❌ Geen video's gevonden");
-      return;
-    }
+if (!matches || matches.length === 0) {
+  console.log("❌ Geen video's gevonden");
+  return;
+}
 
-    const videoLink = `https://www.tiktok.com${matches[0]}`;
+// pak eerste unieke ID
+const videoId = matches[0][1];
+const videoLink = `https://www.tiktok.com/@${config.tiktokUser}/video/${videoId}`;
 
     console.log("🎥 Laatste video:", videoLink);
 
